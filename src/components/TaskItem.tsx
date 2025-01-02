@@ -8,6 +8,16 @@ interface TaskItemProps {
   deleteTask: (id: string) => void;
 }
 
+const colorOptions = [
+  { value: "#f6546a", label: "Red" },
+  { value: "#065535", label: "Green" },
+  { value: "#003366", label: "Blue" },
+  { value: "#ffd700", label: "Yellow" },
+  { value: "#9333ea", label: "Purple" },
+  { value: "#00ffff", label: "Cyan" },
+  { value: "#ff80ed", label: "Pink" },
+];
+
 const TaskItem: React.FC<TaskItemProps> = ({
   task,
   toggleComplete,
@@ -36,6 +46,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
           task.completed ? "line-through text-gray-500" : "text-white"
         }`}
       />
+
+      {/* Color Dropdown */}
+      <select
+        value={task.color}
+        onChange={(e) => editTask(task._id, { color: e.target.value })} // Call editTask
+        className="ml-4 p-1 bg-gray-800 text-white rounded"
+      >
+        {colorOptions.map((option) => (
+          <option
+            key={option.value}
+            value={option.value}
+            style={{ backgroundColor: option.value, color: "white" }}
+          >
+            {option.label}
+          </option>
+        ))}
+      </select>
 
       {/* Delete button */}
       <button

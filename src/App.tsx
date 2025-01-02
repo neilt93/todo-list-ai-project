@@ -162,54 +162,12 @@ const App: React.FC = () => {
         </button>
       </form>
 
-      <ul className="w-full max-w-md">
-        {tasks.map((task) => (
-          <li
-            key={task._id}
-            className="p-2 rounded mb-2 flex justify-between items-center w-400"
-            style={{ backgroundColor: task.color }}
-          >
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => toggleComplete(task._id)}
-              className="mr-4"
-            />
-
-            <input
-              type="text"
-              value={task.name}
-              onChange={(e) => editTask(task._id, { name: e.target.value })}
-              className={`flex-grow bg-transparent border-none focus:outline-none ${
-                task.completed ? "line-through text-gray-500" : "text-white"
-              }`}
-            />
-
-            <select
-              value={task.color}
-              onChange={(e) => editTask(task._id, { color: e.target.value })}
-              className="ml-4 p-1 bg-gray-800 text-white rounded"
-            >
-              {colorOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  style={{ backgroundColor: option.value, color: "white" }}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={() => deleteTask(task._id)}
-              className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <TaskList
+        tasks={tasks}
+        toggleComplete={toggleComplete}
+        editTask={editTask}
+        deleteTask={deleteTask}
+      />
       
       {/* Suggestions */}
       <div className="mt-6">

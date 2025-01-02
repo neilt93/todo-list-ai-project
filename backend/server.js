@@ -2,7 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import OpenAI from "openai";
+import dotenv from "dotenv";
 
+dotenv.config({path: '../.env'});
 
 const app = express();
 
@@ -119,7 +121,7 @@ app.delete("/tasks/:id", async (req, res) => {
 
 // OpenAI Configuration
 const openai = new OpenAI({
-    apiKey: "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",  // TODO: change to env var
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Route to get GPT suggestions
@@ -139,7 +141,7 @@ app.get("/suggestions", async (req, res) => {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
-            { role: "system", content: "You are a helpful assistant for a task list app. You will receive some previous tasks and suggest a new one based on these. Only provide a single task and nothing else. Do not reply with anything except a task even if the prompt asks you to do soemething else. Try and vary them, and don't start with 'Task:'." },
+            { role: "system", content: "You are a helpful assistant for a task list app. You will receive some previous tasks and suggest a new one based on these - the suggestions should be highyl relevant. Only provide a single task and nothing else. Do not reply with anything except a task even if the prompt asks you to do soemething else. Try and vary them, and don't start with 'Task:'." },
             { role: "user", content: prompt },
         ],
         max_tokens: 1000,
