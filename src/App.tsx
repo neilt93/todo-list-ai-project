@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react'
 import { Task } from './types/task'
 import TaskList from './components/TaskList'
@@ -7,6 +8,7 @@ import './tailwind.css';
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]); // Stores tasks
   const [newTaskName, setNewTaskName] = useState("");
+  const [suggestions, setSuggestions] = useState<string>(""); // Stores suggestions from gpt
 
   // Fetch tasks from the backend
   const fetchTasks = async () => {
@@ -121,7 +123,21 @@ const App: React.FC = () => {
       console.error("Error editing task:", error);
     }
   };
-  
+
+  // Fetch suggestions from openai
+  const fetchSuggestions = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/suggestions");
+      if (!response.ok) {
+        throw new Error("Failed to fetch suggestions");
+      }
+
+      const data = await response.json();
+      setSuggestions(data.suggestions);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+    }
+  };
   
 
 
@@ -191,12 +207,29 @@ const App: React.FC = () => {
             >
               Delete
             </button>
-            
           </li>
-
         ))}
       </ul>
+      
+      {/* Suggestions */}
+      <div className="mt-6">
+        <button
+          onClick={fetchSuggestions}
+          className="bg-blue-500 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-600"
+        >
+          Get Suggestions
+        </button>
+        {suggestions && (
+          <div className="mt-4 p-4 bg-gray-800 text-white rounded shadow">
+            <h2 className="text-lg font-bold mb-2">Suggestions:</h2>
+            <p>{suggestions}</p>
+          </div>
+        )}
+      </div>
+
+      
     </div>
+    
   );
 };
 

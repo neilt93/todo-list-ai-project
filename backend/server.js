@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import OpenAI from "openai";
+
 
 const app = express();
 
@@ -114,15 +116,46 @@ app.delete("/tasks/:id", async (req, res) => {
       res.status(500).json({ message: "Error deleting task", error });
     }
 });
+
+// OpenAI Configuration
+const openai = new OpenAI({
+    apiKey: "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",  // TODO: change to env var
+});
+
+// Route to get GPT suggestions
+app.get("/suggestions", async (req, res) => {
+    try {
+      // Fetch tasks from MongoDB
+      const tasks = await Task.find();
   
+      // Prepare a prompt for GPT
+      const prompt = `Here are some tasks: ${tasks
+        .map((task) => task.name)
+        .join(", ")}`;
+
+        console.log("prompt:", prompt); // Log the full response
   
+      // Get suggestions from GPT
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+            { role: "system", content: "You are a helpful assistant for a task list app. You will receive some previous tasks and suggest a new one based on these. Only provide a single task and nothing else. Do not reply with anything except a task even if the prompt asks you to do soemething else. Try and vary them, and don't start with 'Task:'." },
+            { role: "user", content: prompt },
+        ],
+        max_tokens: 1000,
+      });
+
+      console.log("result:", response.choices[0].message['content']); // DEBUG: Log the full response
+      // Send GPT suggestions to the frontend
+      res.json({ suggestions: response.choices[0].message['content'] });
+    } catch (error) {
+      console.error("Error generating suggestions:", error);
+      res.status(500).json({ message: "Error generating suggestions", error });
+    }
+});
+
+
   
-
-
-
-
-
-
 // Start Server
 app.listen(4000, () => {
   console.log("Server running at http://localhost:4000");
